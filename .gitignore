@@ -1,0 +1,14 @@
+# Virtual environment
+venv/
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Configuração do editor
+.vscode/
+.idea/
+*.swp
+
+# Arquivos de ambiente
+.env
+*.log
