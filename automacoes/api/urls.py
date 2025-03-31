@@ -18,7 +18,7 @@ urlpatterns = [
     # Suas URLs da API
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-docs'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='redoc-docs'),
-    path('consulta/', ConsultaAPIView.as_view(), name='consulta'),  # Exemplo de rota
+    path('solicitacoes/', ConsultaAPIView.as_view(), name='solicitacoes'),  # Exemplo de rota
     path('schema/', SpectacularAPIView.as_view(), name='schema'),  # Geração do schema
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import re
 
-class CnpjSerializer(serializers.Serializer):
+class SolicitacoesSerializer(serializers.Serializer):
     cnpj = serializers.CharField(
         max_length=14, min_length=14,
         validators=[
