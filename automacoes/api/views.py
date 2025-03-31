@@ -14,8 +14,8 @@ class SolicitacoesAPIView(APIView):
     )
 
     def post(self, request, *ags, **kwargs):
-        # if not request.content_type == "application/json":
-        #     return Response({"error": "Content-Type deve ser application/json"}, status=400)
+        if not request.content_type == "application/json":
+            return Response({"error": "Content-Type deve ser application/json"}, status=400)
         serializer = SolicitacoesSerializer(data=request.data)
         if serializer.is_valid():
             return Response({"mensagem": "Dados recebidos com sucesso!", "dados": serializer.validated_data}, status=status.HTTP_200_OK)
