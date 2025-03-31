@@ -3,14 +3,22 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from .serializers import CnpjSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.parsers import JSONParser
 
-class HelloView(APIView):
-    @extend_schema(
-        responses={200: 'Mensagem de sucesso'}
+class ConsultaAPIView(APIView):
+    @swagger_auto_schema(
+        request_body=CnpjSerializer
     )
-    def get(self, request):
-        # Acessa o parâmetro 'name' diretamente da query string
-        name = request.query_params.get('name', 'Munfo')  # Default 'Munfo' caso 'name' não seja passado
-        return Response({'message': f'Olá, {name}'}, status=status.HTTP_200_OK)
+
+    def post(self, request, *ags, **kwargs):
+        # if not request.content_type == "application/json":
+        #     return Response({"error": "Content-Type deve ser application/json"}, status=400)
+        serializer = CnpjSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"mensagem": "Dados recebidos com sucesso!", "dados": serializer.validated_data}, status=status.HTTP_200_OK)
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
 
 

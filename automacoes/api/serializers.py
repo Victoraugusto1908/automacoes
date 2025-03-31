@@ -1,5 +1,15 @@
 from rest_framework import serializers
+import re
 
-# Exemplo de um serializer para um modelo simples
-class HelloSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100, required=False, default='Mundo')
+class CnpjSerializer(serializers.Serializer):
+    cnpj = serializers.CharField(
+        max_length=14, min_length=14,
+        validators=[
+            lambda value: re.match(r'^\d{14}$', value) or serializers.ValidationError("CNPJ deve conter exatamente 14 dígitos númericos.")
+        ]
+    )
+    ambiente = serializers.CharField(max_length=200)
+    certificado = serializers.BooleanField()
+    data_inicial = serializers.DateField()
+    data_final = serializers.DateField()
+    documento = serializers.IntegerField()
