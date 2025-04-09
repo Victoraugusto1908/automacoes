@@ -3,7 +3,7 @@ import uuid
 
 class Solicitacoes(models.Model):
     solicitacao_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cnpj = models.CharField(max_length=14, unique=True)
+    cnpj = models.CharField(max_length=14)
     ambiente = models.CharField(max_length=200)
     certificado = models.BooleanField(default=False)
     data_inicial = models.DateField()
