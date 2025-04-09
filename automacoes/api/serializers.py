@@ -1,8 +1,8 @@
 from rest_framework import serializers
 import re
-from .models import Solicitacoes
+from .models import Solicitacoes, DefStatusSolicitacoes, DefDocumentos
 
-class SolicitacoesSerializer(serializers.Serializer):
+class SolicitacoesSerializer(serializers.ModelSerializer):
     cnpj = serializers.CharField(
         max_length=14, min_length=14,
         validators=[
@@ -13,8 +13,13 @@ class SolicitacoesSerializer(serializers.Serializer):
     certificado = serializers.BooleanField()
     data_inicial = serializers.DateField()
     data_final = serializers.DateField()
-    documento = serializers.IntegerField()
+    documento_id = serializers.IntegerField()
 
     class Meta:
         model = Solicitacoes
-        fields = ['cnpj', 'ambiente', 'certificado', 'data_inicial', 'data_final', 'documento']
+        fields = ['cnpj', 'ambiente', 'certificado', 'data_inicial', 'data_final', 'documento_id']
+    
+    def create(self, validated_data):
+        status_solicitacao = DefStatusSolicitacoes.objects.get(pk=1)
+        validated_data['status_solicitacao_id'] = status_solicitacao
+        return Solicitacoes.objects.create(**validated_data)
