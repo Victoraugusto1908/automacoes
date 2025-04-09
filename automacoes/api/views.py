@@ -18,6 +18,7 @@ class SolicitacoesAPIView(APIView):
             return Response({"error": "Content-Type deve ser application/json"}, status=400)
         serializer = SolicitacoesSerializer(data=request.data)
         if serializer.is_valid():
+            serializer.save()
             return Response({"mensagem": "Dados recebidos com sucesso!", "dados": serializer.validated_data}, status=status.HTTP_200_OK)
         return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
 

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 import re
+from .models import Solicitacoes
 
 class SolicitacoesSerializer(serializers.Serializer):
     cnpj = serializers.CharField(
@@ -13,3 +14,7 @@ class SolicitacoesSerializer(serializers.Serializer):
     data_inicial = serializers.DateField()
     data_final = serializers.DateField()
     documento = serializers.IntegerField()
+
+    class Meta:
+        model = Solicitacoes
+        fields = ['cnpj', 'ambiente', 'certificado', 'data_inicial', 'data_final', 'documento']
