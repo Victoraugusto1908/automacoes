@@ -22,7 +22,7 @@ class SolicitacoesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Solicitacoes
-        fields = ['cnpj', 'ambiente', 'certificado', 'data_inicial', 'data_final', 'documento_id']
+        fields = ['solicitacao_id', 'cnpj', 'ambiente', 'certificado', 'data_inicial', 'data_final', 'documento_id']
     
     def create(self, validated_data):
         try:

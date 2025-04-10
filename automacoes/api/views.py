@@ -19,7 +19,10 @@ class SolicitacoesAPIView(APIView):
         serializer = SolicitacoesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"mensagem": "Dados recebidos com sucesso!", "dados": serializer.validated_data}, status=status.HTTP_200_OK)
+            return Response(
+                {"mensagem": "Dados recebidos com sucesso!", 
+                 "dados": serializer.data}, 
+                 status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
