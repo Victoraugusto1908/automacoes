@@ -1,5 +1,5 @@
-from biblioteca import *
-from certificateSelector import *
+from automacoes.lib.biblioteca import *
+from automacoes.lib.certificateSelector import *
 from pathlib import Path
 
 def main(cnpj, ambiente, certificado, data_inicial, data_final):
