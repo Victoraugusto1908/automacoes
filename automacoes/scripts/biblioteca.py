@@ -23,9 +23,7 @@ from calendar import monthrange
 import re
 import dropbox
 import tempfile
-
-for handler in logging.root.handlers[:]:
-    logging.root.removeHandler(handler)
+from pyautogui import hotkey
 
 """descomentar quando for rodar no docker"""
 #Criando uma instância do webdriver
@@ -69,38 +67,6 @@ def chrome_options_def(path):
     logs.info(f"Iniando o programa...")
 
     return driver
-
-# """Criando uma instância do webdriver"""
-# def chrome_options_def(path):
-#     chrome_options = uc.ChromeOptions()
-#     # JSON para configurar o destino como "Salvar como PDF"
-#     app_state = {
-#     "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
-#     "selectedDestinationId": "Save as PDF",
-#     "version": 2,
-#     "isHeaderFooterEnabled": False  # Se preferir, desativa cabeçalho e rodapé
-#     }
-#     prefs = {
-#     "printing.print_preview_sticky_settings.appState": json.dumps(app_state),
-#     "download.default_directory": path,  # Define a pasta de destino
-#     "profile.default_content_settings.popups": 0,
-#     "download.prompt_for_download": False,
-#     "savefile.default_directory": path, # Define a pasta de destino
-#     "plugins.always_open_pdf_externally": True
-#     }
-
-#     chrome_options.add_experimental_option("prefs", prefs)
-#     chrome_options.add_argument("--disable-popup-blocking") # parâmetrização do uc para sempre habilitar popup (necessário para abrir uma nova aba)
-#     chrome_options.add_argument("--disable-infobars") # parâmetrização do uc para desabilitar infobars
-#     chrome_options.add_argument("--start-maximized") # parâmetrização do uc para inicar o chrome maximizado
-#     chrome_options.add_argument('--kiosk-printing') # Suprime a janela de diálogo de impressão
-#     # chrome_options.add_argument('--disable-print-preview') # Desativa a visualização da impressão
-    
-#     driver = uc.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-#     logging.info(f"Iniando o programa...")
-
-#     return driver
 
 # Classe para o wait
 class SeleniumHelper:
@@ -1206,3 +1172,45 @@ def upload_arquivo(acces_token, download, dropbox_path):
 
     with open(download, "rb") as f:
         dbx.files_upload(f.read, dropbox_path, mode=dropbox.files.WriteMode("overwrite"))
+
+
+def periodo(data_inicial, data_final):
+    try:
+        data_inicial = datetime.strptime(data_inicial, '%Y-%m-%d')
+        data_final = datetime.strptime(data_final, "%Y-%m-%d")
+
+        try:
+            data_inicial = data_inicial.replace(day=1)
+
+            periodos = []
+            while data_inicial <= data_final:
+                ptemp = []
+                ptemp.append(data_inicial.strftime('%d/%m/%Y'))
+
+                ultimo_dia = monthrange(data_inicial.year, data_inicial.month)[1]
+                temp_data_final = data_inicial.replace(day=ultimo_dia)
+                ptemp.append(temp_data_final.strftime('%d/%m/%Y'))
+                periodos.append(ptemp)
+
+                data_inicial += relativedelta(months=1)
+            
+            return periodos
+
+        except Exception as e:
+            logs.erro(f"Houve um erro ao montar a lista dos periodos: {e}")
+
+    except Exception as e:
+        logs.erro(f"Houve um erro ao formatar as datas: {e}")
+
+def anos_periodo(periodos):
+    try:
+        anos = []
+        for periodo in periodos:
+            ano = periodo[0].split('/')[2]
+            print(ano)
+            if ano not in anos:
+                anos.append(ano)
+        return anos
+
+    except Exception as e:
+        logs.erro(f"Houve um erro ao montar a lista dos anos: {e}")
