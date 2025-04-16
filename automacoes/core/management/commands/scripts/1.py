@@ -1,6 +1,7 @@
-from automacoes.lib.biblioteca import *
-from automacoes.lib.certificateSelector import *
+from biblioteca import *
+from certificateSelector import *
 from pathlib import Path
+import sys
 
 def main(cnpj, ambiente, certificado, data_inicial, data_final):
     # Garantindo que esse path existe
@@ -11,10 +12,10 @@ def main(cnpj, ambiente, certificado, data_inicial, data_final):
         print("Tem que implementar a lógica do certificado próprio da empresa.")
 
     elif certificado == 'false':
-        certificado = r"C:\Users\victor.gomes\Documents\projeto_automacoes\automacoes\Fiscoplan - Fisco2011.pfx"
+        certificado_path = r"C:\Users\victor.gomes\Documents\projeto_automacoes\automacoes\Fiscoplan - Fisco2011.pfx"
         senha = "Fisco2011"
         
-    CertificateSelector(certificado, senha)
+    CertificateSelector(certificado_path, senha)
 
     # iniciando uma instância no driver
     driver = chrome_options_def(path)
@@ -79,3 +80,19 @@ def main(cnpj, ambiente, certificado, data_inicial, data_final):
             print("Não foi possível realizar o login no perfil do procurador.")
     else:
         print("Houve um erro ao realizar o login no e-cac.")
+
+
+if __name__ == "__main__":
+    # cnpj = sys.argv[1]
+    # ambiente = sys.argv[2]
+    # certificado = sys.argv[3]
+    # data_inicial = sys.argv[4]
+    # data_final = sys.argv[5]
+
+    cnpj = "28121387000153"
+    ambiente = "fiscoplan24.grupofiscoplan.com.br"
+    certificado = "false"
+    data_inicial = "2024-01-01"
+    data_final = "2024-12-31"
+
+    main(cnpj, ambiente, certificado, data_inicial, data_final)

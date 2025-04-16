@@ -22,49 +22,66 @@ from selenium.webdriver.common.action_chains import ActionChains
 from calendar import monthrange
 import re
 import dropbox
-import tempfile
 from pyautogui import hotkey
 
 """descomentar quando for rodar no docker"""
-#Criando uma instância do webdriver
+# Criando uma instância do webdriver
 def chrome_options_def(path):
     chrome_options = uc.ChromeOptions()
-    
+
     # JSON para configurar o destino como "Salvar como PDF"
     app_state = {
         "recentDestinations": [{"id": "Save as PDF", "origin": "local", "account": ""}],
         "selectedDestinationId": "Save as PDF",
         "version": 2,
-        "isHeaderFooterEnabled": False  # Se preferir, desativa cabeçalho e rodapé
+        "isHeaderFooterEnabled": False
     }
 
     prefs = {
         "printing.print_preview_sticky_settings.appState": json.dumps(app_state),
-        "download.default_directory": path,  # Define a pasta de destino
+        "download.default_directory": str(path),
         "profile.default_content_settings.popups": 0,
         "download.prompt_for_download": False,
-        "savefile.default_directory": path,  # Define a pasta de destino
         "plugins.always_open_pdf_externally": True
     }
-    
-    # user_data_dir = tempfile.mkdtemp()
 
     chrome_options.add_experimental_option("prefs", prefs)
-    chrome_options.add_argument("--disable-popup-blocking")  # Sempre habilitar popup
-    chrome_options.add_argument("--disable-infobars")  # Desabilitar infobars
-    chrome_options.add_argument("--start-maximized")  # Iniciar o chrome maximizado
-    chrome_options.add_argument('--kiosk-printing')  # Suprimir a janela de diálogo de impressão
-    # chrome_options.add_argument('--headless')  # Modo headless
-    chrome_options.add_argument('--no-sandbox')  # Desabilitar sandbox no Docker
-    chrome_options.add_argument('--disable-dev-shm-usage')  # Desabilitar o uso de compartilhamento de memória
-    chrome_options.add_argument('--disable-extensions')  # Desabilitar extensões no Chrome
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    # chrome_options.add_argument(f"--user-data-dir={user_data_dir}")  # Altere o caminho conforme necessário
 
-    # Criação do driver
+    # Argumentos para disfarçar a automação
+    chrome_options.add_argument("--disable-popup-blocking")
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_argument('--kiosk-printing')
+    chrome_options.add_argument('--disable-print-preview')
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Usa o perfil do Chrome onde o certificado já está instalado
+    chrome_options.add_argument(r"--user-data-dir=C:\Users\victor.gomes\AppData\Local\Google\Chrome\User Data")
+    chrome_options.add_argument("--profile-directory=Default")
+
+    # Cria o driver SEM fixar version_main (ele detecta automaticamente)
     driver = uc.Chrome(options=chrome_options)
 
-    logs.info(f"Iniando o programa...")
+    # Remove o indicador de automação
+    # driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+    #     "source": """
+    #         Object.defineProperty(navigator, 'webdriver', {
+    #             get: () => undefined
+    #         });
+    #         window.navigator.chrome = {
+    #             runtime: {}
+    #         };
+    #         Object.defineProperty(navigator, 'plugins', {
+    #             get: () => [1, 2, 3],
+    #         });
+    #         Object.defineProperty(navigator, 'languages', {
+    #             get: () => ['pt-BR', 'pt'],
+    #         });
+    #     """
+    # })
+
+    logging.info(f"Iniciando o programa...")
 
     return driver
 
@@ -154,7 +171,23 @@ def login(driver):
         except Exception as e:
             print(f"Erro nível 2: ({e})")
             logs.erro(f"Ocorreu algum problema ao passar pelo captcha: {e}")
-            return False
+
+            try:
+                driver.delete_all_cookies()
+                driver.execute_cdp_cmd('Network.clearBrowserCache', {})
+                driver.refresh()
+
+                try:
+                    helper.clicar_elemento(By.XPATH, '/html/body/div[2]/div/div[2]/div/form/div[2]/p[2]/input') #/html/body/div[2]/div/div[2]/div/form/div[2]/p[2]/input
+                    helper.clicar_elemento(By.ID, "login-certificate")
+                    sleep(10)
+
+                except Exception as e:
+                    print(f"Erro nível 2: ({e})")
+        
+            except Exception as e:
+                print(f"Erro ao limpar cookies e cache: {e}")
+                return False
 
     except FileNotFoundError:
         print("Este endereço não existe.")
@@ -163,6 +196,10 @@ def login(driver):
     except ConnectionError:
         print("Sem acesso a internet ou o site está fora do ar")
         logs.erro(f"Sem conexação com a internet ou o site está fora do ar.")
+        return False
+    except TimeoutException as e:
+        print(f"Tempo de espera estourado: {e}")
+        logs.erro(f"Tempo de espera estourado: {e}")
         return False
     except Exception as e:
         print(f"Erro nível 1: ({e})")
