@@ -14,7 +14,7 @@ def main(cnpj, ambiente, certificado, data_inicial, data_final):
     elif certificado == 'false':
         certificado_path = r"C:\Users\victor.gomes\Documents\projeto_automacoes\automacoes\Fiscoplan - Fisco2011.pfx"
         senha = "Fisco2011"
-        
+    
     CertificateSelector(certificado_path, senha)
 
     # iniciando uma instância no driver

@@ -24,7 +24,6 @@ import re
 import dropbox
 from pyautogui import hotkey
 
-"""descomentar quando for rodar no docker"""
 # Criando uma instância do webdriver
 def chrome_options_def(path):
     chrome_options = uc.ChromeOptions()
@@ -56,30 +55,29 @@ def chrome_options_def(path):
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    # Usa o perfil do Chrome onde o certificado já está instalado
     chrome_options.add_argument(r"--user-data-dir=C:\Users\victor.gomes\AppData\Local\Google\Chrome\User Data")
-    chrome_options.add_argument("--profile-directory=Default")
+    chrome_options.add_argument("--profile-directory=Profile 2")
 
     # Cria o driver SEM fixar version_main (ele detecta automaticamente)
     driver = uc.Chrome(options=chrome_options)
 
     # Remove o indicador de automação
-    # driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-    #     "source": """
-    #         Object.defineProperty(navigator, 'webdriver', {
-    #             get: () => undefined
-    #         });
-    #         window.navigator.chrome = {
-    #             runtime: {}
-    #         };
-    #         Object.defineProperty(navigator, 'plugins', {
-    #             get: () => [1, 2, 3],
-    #         });
-    #         Object.defineProperty(navigator, 'languages', {
-    #             get: () => ['pt-BR', 'pt'],
-    #         });
-    #     """
-    # })
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": """
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+            window.navigator.chrome = {
+                runtime: {}
+            };
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [1, 2, 3],
+            });
+            Object.defineProperty(navigator, 'languages', {
+                get: () => ['pt-BR', 'pt'],
+            });
+        """
+    })
 
     logging.info(f"Iniciando o programa...")
 
@@ -131,7 +129,7 @@ class SeleniumHelper:
 
 #Classe do log
 class logs:
-    log = "/app/codigos/INFO.log"
+    log = "log.txt"
     def __init__(self, filename=log):
         logging.basicConfig(filename=filename, format = "%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO, encoding='UTF-8')
 
@@ -154,8 +152,10 @@ def login(driver):
 
         # Tentando clicar nos botões para logar com o certificado
         try:
+            sleep(3)
             helper.clicar_elemento(By.XPATH, '/html/body/div[2]/div/div[2]/div/form/div[2]/p[2]/input') #/html/body/div[2]/div/div[2]/div/form/div[2]/p[2]/input
 
+            sleep(3)
             helper.clicar_elemento(By.ID, "login-certificate")    
 
             logs.info(f"Login feito com sucesso.")
